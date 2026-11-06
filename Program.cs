@@ -7,7 +7,7 @@ namespace cSharpPracticum
     {
         static void Main(string[] args)
         {
-            LevelMenu.Start();
+            MenuRunner.Start();
         }
     }
 }

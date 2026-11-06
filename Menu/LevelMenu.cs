@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CSharpPracticum.Common;
+using CSharpPracticum.Tasks.Level1;
+using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text;
@@ -7,44 +9,73 @@ namespace CSharpPracticum.Menu
 {
     public class LevelMenu
     {
-        public static void Start() {
-
-            bool IsRun = true;
-            while (IsRun)
+        public static void ShowLevel1()
+        {
+            List<ITask> tasks = new List<ITask>
             {
-                Console.WriteLine("=== Практикум по C# ===");
-                Console.WriteLine("1. Уровень 1 — Базовый (задания 1–15)");
-                Console.WriteLine("2. Уровень 2 — Средний (задания 16–35)");
-                Console.WriteLine("3. Уровень 3 — Продвинутый (задания 36–50)");
-                Console.WriteLine("4. Выход");
+                new Task01_HelloWorldAndDate()
+            };
 
-                Console.Write("Выберите уровень (1-4): ");
+            while (true)
+            {
+                Console.Clear();
 
-                if (int.TryParse(Console.ReadLine(), out int choice))
+                Console.WriteLine("=== Уровень 1. Базовый ===");
+                Console.WriteLine("--------------------------------");
+
+                for (int i = 0; i < tasks.Count; i++)
                 {
-                    switch (choice)
-                    {
-                        case 1:
-                            Console.WriteLine("=== 1. Уровень 1 — Базовый ===");
-                            break;
-                        case 2:
-                            Console.WriteLine("=== 2. Уровень 2 — Средний ===");
-                            break;
-                        case 3:
-                            Console.WriteLine("=== 3. Уровень 3 — Продвинутый ===");
-                            break;
-                        case 4:
-                            return;
-                        default:
-                            Console.WriteLine("Нужно выбрать от 1 до 4");
-                            break;
-                    }
+                    Console.WriteLine($"{i + 1}. {tasks[i].Title}");
                 }
-                else
+
+                Console.WriteLine("0. Назад");
+                Console.WriteLine("--------------------------------");
+                Console.Write("Выберите задание: ");
+
+                string choice = Console.ReadLine();
+
+                if (choice == "0")
+                    return;
+
+                if (!int.TryParse(choice, out int number) ||
+                    number < 1 || number > tasks.Count)
                 {
-                    Console.WriteLine("ВВЕДИТЕ ЧИСЛО ОТ 1 ДО 4 БЛИН");
+                    Console.Clear();
+                    Console.WriteLine("Некорректный ввод!");
+                    Console.WriteLine("Выберите существующее задание.\n");
+                    Console.WriteLine("Нажмите Enter для продолжения...");
+                    Console.ReadLine();
+                    continue;
                 }
+
+                Console.Clear();
+
+                ITask selectedTask = tasks[number - 1];
+
+                TaskInfoAttribute.Show(selectedTask);
+
+                selectedTask.Run();
+
+                Console.WriteLine();
+                Console.WriteLine("Нажмите Enter для возврата...");
+                Console.ReadLine();
             }
+        }
+
+        public static void ShowLevel2()
+        {
+            Console.Clear();
+            Console.WriteLine("--- Уровень 2. Средний ---");
+            Console.WriteLine("Нажмите Enter для возврата:");
+            Console.ReadLine();
+        }
+
+        public static void ShowLevel3()
+        {
+            Console.Clear();
+            Console.WriteLine("--- Уровень 3. Продвинутый ---");
+            Console.WriteLine("Нажмите Enter для возврата:");
+            Console.ReadLine();
         }
     }
 }

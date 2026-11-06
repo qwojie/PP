@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Tasks\Level1\" />
     <Folder Include="Tasks\Level2\" />
     <Folder Include="Tasks\Level3\" />
   </ItemGroup>
