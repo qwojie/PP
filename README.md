@@ -54,4 +54,4 @@ dotnet run --project CSharpPracticum/CSharpPracticum/CSharpPracticum.csproj
 | 32 | Свойства с валидацией (`Temperature`) | Выполнено |
 | 33 | LINQ: сотрудники (top-3, avg по отделу, фильтр) | Выполнено |
 | 34 | LINQ: группировка слов по первой букве | Выполнено |
-| 35 | Git: `.gitignore`, `.editorconfig`, PR, Conventional Commits, rebase | В работе |
+| 35 | Git: `.gitignore`, `.editorconfig`, PR, Conventional Commits, rebase | Выполнено |
