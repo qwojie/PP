@@ -1,5 +1,6 @@
 ﻿using CSharpPracticum.Common;
 using CSharpPracticum.Tasks.Level1;
+using CSharpPracticum.Tasks.Level2;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -78,6 +79,30 @@ namespace CSharpPracticum.Menu
 
         public static void ShowLevel2()
         {
+            List<ITask> tasks = new List<ITask>
+            {
+                new Task16_StringExt(),
+                new Task17_StringBuilderVsConcat(),
+                new Task18_TryParseVsTryCatch(),
+                new Task19_CustomCollections(),
+                new Task20_Generics(),
+                new Task21_EnumDays(),
+                new Task22_ParamsOverload(),
+                new Task23_NullableTypes(),
+                new Task24_AnimalsOop(),
+                new Task25_ShapesSort(),
+                new Task26_StrategyDiscount(),
+                new Task27_StudentCompare(),
+                new Task28_PointEquals(),
+                new Task29_FactoryNotification(),
+                new Task30_BankAccount(),
+                new Task31_DisposableFileWriter(),
+                new Task32_TemperatureValidation(),
+                new Task33_LinqEmployees(),
+                new Task34_LinqGroupWords()
+
+            };
+
             Console.Clear();
             Console.WriteLine("--- Уровень 2. Средний ---");
             Console.WriteLine("Нажмите Enter для возврата:");
