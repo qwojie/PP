@@ -1,0 +1,15 @@
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\bin\Debug\net10.0\CSharpPracticum.exe
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\bin\Debug\net10.0\CSharpPracticum.deps.json
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\bin\Debug\net10.0\CSharpPracticum.runtimeconfig.json
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\bin\Debug\net10.0\CSharpPracticum.dll
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\bin\Debug\net10.0\CSharpPracticum.pdb
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\CSharpPracticum.GeneratedMSBuildEditorConfig.editorconfig
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\CSharpPracticum.AssemblyInfoInputs.cache
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\CSharpPracticum.AssemblyInfo.cs
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\CSharpPracticum.csproj.CoreCompileInputs.cache
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\CSharpPracticum.dll
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\refint\CSharpPracticum.dll
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\CSharpPracticum.pdb
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\CSharpPracticum.genruntimeconfig.cache
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\ref\CSharpPracticum.dll
+D:\мусоркод\PrakikaP\CSharpPracticum\CSharpPracticum\obj\Debug\net10.0\CSharpPr.960782D0.Up2Date
