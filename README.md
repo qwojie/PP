@@ -55,3 +55,9 @@ dotnet run --project CSharpPracticum/CSharpPracticum/CSharpPracticum.csproj
 | 33 | LINQ: сотрудники (top-3, avg по отделу, фильтр) | Выполнено |
 | 34 | LINQ: группировка слов по первой букве | Выполнено |
 | 35 | Git: `.gitignore`, `.editorconfig`, PR, Conventional Commits, rebase | В работе |
+
+Step 1
+
+Step 2
+
+Step 3
