@@ -1,6 +1,7 @@
 ﻿using CSharpPracticum.Common;
 using CSharpPracticum.Tasks.Level1;
 using CSharpPracticum.Tasks.Level2;
+using CSharpPracticum.Tasks.Level3;
 
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,6 @@ namespace CSharpPracticum.Menu
                 new Task12_Palindrome(),
                 new Task13_WordCount(),
                 new Task14_AgeCalc(),
-
             };
 
             while (true)
@@ -48,10 +48,12 @@ namespace CSharpPracticum.Menu
                 Console.WriteLine("--------------------------------");
                 Console.Write("Выберите задание: ");
 
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
 
                 if (choice == "0")
+                {
                     return;
+                }
 
                 if (!int.TryParse(choice, out int number) ||
                     number < 1 || number > tasks.Count)
@@ -101,7 +103,6 @@ namespace CSharpPracticum.Menu
                 new Task32_TemperatureValidation(),
                 new Task33_LinqEmployees(),
                 new Task34_LinqGroupWords()
-
             };
 
             while (true)
@@ -120,10 +121,12 @@ namespace CSharpPracticum.Menu
                 Console.WriteLine("--------------------------------");
                 Console.Write("Выберите задание: ");
 
-                string choice = Console.ReadLine();
+                string? choice = Console.ReadLine();
 
                 if (choice == "0")
+                {
                     return;
+                }
 
                 if (!int.TryParse(choice, out int number) ||
                     number < 1 || number > tasks.Count)
@@ -152,10 +155,66 @@ namespace CSharpPracticum.Menu
 
         public static void ShowLevel3()
         {
-            Console.Clear();
-            Console.WriteLine("--- Уровень 3. Продвинутый ---");
-            Console.WriteLine("Нажмите Enter для возврата:");
-            Console.ReadLine();
+            List<ITask> tasks = new List<ITask>
+            {
+                new Task36_ListDuplicates(),
+                new Task37_FibonacciMemo(),
+                new Task38_ListAndLinkedList(),
+                new Task39_YieldReturn(),
+                new Task40_AsyncDownload(),
+                new Task41_TenTask(),
+                new Task42_CancellationToken(),
+                new Task43_MultipleExceptions(),
+                new Task44_TodoList(),
+                new Task45_Library()
+            };
+
+            while (true)
+            {
+                Console.Clear();
+
+                Console.WriteLine("=== Уровень 3. Продвинутый ===");
+                Console.WriteLine("--------------------------------");
+
+                for (int i = 0; i < tasks.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {tasks[i].Title}");
+                }
+
+                Console.WriteLine("0. Назад");
+                Console.WriteLine("--------------------------------");
+                Console.Write("Выберите задание: ");
+
+                string? choice = Console.ReadLine();
+
+                if (choice == "0")
+                {
+                    return;
+                }
+
+                if (!int.TryParse(choice, out int number) ||
+                    number < 1 || number > tasks.Count)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Некорректный ввод!");
+                    Console.WriteLine("Выберите существующее задание.\n");
+                    Console.WriteLine("Нажмите Enter для продолжения...");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                Console.Clear();
+
+                ITask selectedTask = tasks[number - 1];
+
+                TaskInfoAttribute.Show(selectedTask);
+
+                selectedTask.Run();
+
+                Console.WriteLine();
+                Console.WriteLine("Нажмите Enter для возврата...");
+                Console.ReadLine();
+            }
         }
     }
 }
