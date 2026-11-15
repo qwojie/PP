@@ -84,3 +84,11 @@ d0ea2ba chore: add gitignore and editorconfig
 
 
 ### Уровень 3 (Задания 46–50)
+
+- squash step 1
+
+- squash step 2
+
+- squash step 3
+
+- squash step 4
