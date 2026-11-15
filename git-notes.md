@@ -82,3 +82,5 @@ d0ea2ba chore: add gitignore and editorconfig
 
 ```
 
+
+### Уровень 3 (Задания 46–50)
