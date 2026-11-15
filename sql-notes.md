@@ -881,3 +881,293 @@ text Запрос 1 (без индекса): План — Clustered Index Scan (
 Вывод
 
 Научился создавать некластерные индексы и анализировать статистику ввода-вывода (STATISTICS IO) и планы выполнения. Увидел, что на маленькой таблице из 9 строк полное сканирование (2 logical reads) обходится дешевле, чем поиск по индексу с последующим Key Lookup для каждой из 4 найденных строк (10 logical reads).
+
+
+---
+
+## Task 21 — Хранимые процедуры
+
+### Запрос
+
+```sql
+-- 1. Процедура получения сотрудников отдела
+CREATE PROCEDURE sp_GetEmployeesByDepartment
+    @DeptId INT
+AS
+BEGIN
+    SELECT EmployeeId, EmployeeName, Salary, HireDate
+    FROM Employees
+    WHERE DepartmentId = @DeptId;
+END;
+GO
+
+EXEC sp_GetEmployeesByDepartment @DeptId = 1;
+GO
+
+-- 2. Процедура с OUTPUT-параметром для средней зарплаты отдела
+CREATE PROCEDURE sp_GetAvgSalaryByDepartment
+    @DeptId INT,
+    @AvgSalary DECIMAL(10,2) OUTPUT
+AS
+BEGIN
+    SELECT @AvgSalary = AVG(Salary)
+    FROM Employees
+    WHERE DepartmentId = @DeptId;
+END;
+GO
+
+DECLARE @ResultAvg DECIMAL(10,2);
+EXEC sp_GetAvgSalaryByDepartment @DeptId = 1, @AvgSalary = @ResultAvg OUTPUT;
+SELECT @ResultAvg AS Department1AvgSalary;
+GO
+```
+
+### Результат
+
+```text
+Вызов 1 (сотрудники отдела 1): 4 строки — Анна Иванова (76500.00), Пётр Сидоров (84200.00), Мария Кузнецова (65500.00), Иван Петров (60000.00).
+Вызов 2 (Department1AvgSalary через OUTPUT): 71550.00.
+```
+
+### Вывод
+
+Научился создавать и вызывать хранимые процедуры с входными параметрами и выходными `OUTPUT`-параметрами для возврата вычисленных значений в переменные T-SQL.
+
+---
+
+## Task 22 — Функции: скалярная и табличная
+
+### Запрос
+
+```sql
+-- 1. Скалярная функция: годовая зарплата
+CREATE FUNCTION fn_GetAnnualSalary(@MonthlySalary DECIMAL(10,2))
+RETURNS DECIMAL(12,2)
+AS
+BEGIN
+    RETURN @MonthlySalary * 12;
+END;
+GO
+
+SELECT 
+    EmployeeName,
+    Salary AS MonthlySalary,
+    dbo.fn_GetAnnualSalary(Salary) AS AnnualSalary
+FROM Employees;
+GO
+
+-- 2. Табличная функция: сотрудники по диапазону зарплат
+CREATE FUNCTION fn_GetEmployeesBySalaryRange(@Min DECIMAL(10,2), @Max DECIMAL(10,2))
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT EmployeeId, EmployeeName, Salary, DepartmentId
+    FROM Employees
+    WHERE Salary BETWEEN @Min AND @Max
+);
+GO
+
+SELECT * 
+FROM dbo.fn_GetEmployeesBySalaryRange(50000, 70000);
+GO
+```
+
+### Результат
+
+```text
+Скалярная функция: выведена годовая зарплата для всех 9 сотрудников (например, Анна Иванова — 918000.00, Алексей Лебедев — 1140000.00).
+Табличная функция (диапазон 50000–70000): возвращено 5 сотрудников (Мария Кузнецова, Иван Петров, Ольга Смирнова, Дмитрий Орлов, Елена Волкова).
+```
+
+### Вывод
+
+Разобрался в разнице между скалярными функциями (вызываются в списке `SELECT` с обязательным префиксом схемы `dbo.`) и встраиваемыми табличными функциями (`RETURNS TABLE`), которые используются в блоке `FROM`.
+
+---
+
+## Task 23 — Оконные функции: ROW_NUMBER, RANK, DENSE_RANK
+
+### Запрос
+
+```sql
+BEGIN TRANSACTION;
+
+-- Временно делаем одинаковую зарплату двум сотрудникам в отделе 1 для демонстрации RANK vs DENSE_RANK
+UPDATE Employees SET Salary = 76500.00 WHERE EmployeeId = 2;
+
+SELECT 
+    EmployeeName,
+    DepartmentId,
+    Salary,
+    ROW_NUMBER() OVER (ORDER BY Salary DESC) AS GlobalRowNum,
+    RANK() OVER (PARTITION BY DepartmentId ORDER BY Salary DESC) AS DeptRank,
+    DENSE_RANK() OVER (PARTITION BY DepartmentId ORDER BY Salary DESC) AS DeptDenseRank
+FROM Employees
+ORDER BY DepartmentId ASC, Salary DESC;
+
+ROLLBACK TRANSACTION;
+GO
+```
+
+### Результат
+
+```text
+В отделе 1 при равной зарплате 76500.00 у Петра Сидорова и Анны Ивановой:
+Пётр Сидоров: GlobalRowNum = 2, DeptRank = 1, DeptDenseRank = 1
+Анна Иванова: GlobalRowNum = 3, DeptRank = 1, DeptDenseRank = 1
+Мария Кузнецова (65500.00): GlobalRowNum = 5, DeptRank = 3, DeptDenseRank = 2
+Иван Петров (60000.00): GlobalRowNum = 6, DeptRank = 4, DeptDenseRank = 3
+```
+
+### Вывод
+
+Наглядно увидел разницу между ранжирующими оконными функциями: при совпадении значений `RANK()` пропускает следующий номер (после двух первых мест идёт третье), а `DENSE_RANK()` присваивает ранги без разрывов.
+
+---
+
+## Task 24 — Оконные агрегаты: SUM OVER, AVG OVER
+
+### Запрос
+
+```sql
+SELECT 
+    EmployeeName,
+    DepartmentId,
+    Salary,
+    SUM(Salary) OVER (PARTITION BY DepartmentId) AS DeptTotalSalary,
+    ROUND(AVG(Salary) OVER (PARTITION BY DepartmentId), 2) AS DeptAvgSalary,
+    ROUND(Salary - AVG(Salary) OVER (PARTITION BY DepartmentId), 2) AS DiffFromDeptAvg
+FROM Employees
+ORDER BY DepartmentId ASC, Salary DESC;
+GO
+```
+
+### Результат
+
+```text
+Отдел 1: DeptTotalSalary = 286200.00, DeptAvgSalary = 71550.00, отклонения от +12650.00 до -11550.00.
+Отдел 2: DeptTotalSalary = 176000.00, DeptAvgSalary = 58666.67, отклонения от +7333.33 до -6666.67.
+Отдел 3: DeptTotalSalary = 43000.00, DeptAvgSalary = 43000.00, отклонение = 0.00.
+Отдел 4: DeptTotalSalary = 95000.00, DeptAvgSalary = 95000.00, отклонение = 0.00.
+```
+
+### Вывод
+
+Понял преимущество оконных агрегатов `OVER (PARTITION BY ...)`: они позволяют выводить сводные показатели по группе (сумму и среднюю по отделу) в каждой строке без сворачивания таблицы через `GROUP BY`.
+
+---
+
+## Task 25 — CTE (Common Table Expressions)
+
+### Запрос
+
+```sql
+-- 1. Сотрудники с зарплатой выше средней через CTE
+WITH AvgSalary AS (
+    SELECT AVG(Salary) AS AverageVal
+    FROM Employees
+)
+SELECT e.EmployeeId, e.EmployeeName, e.Salary
+FROM Employees e
+CROSS JOIN AvgSalary a
+WHERE e.Salary > a.AverageVal;
+GO
+
+-- 2. Топ-3 отдела по средней зарплате через CTE
+WITH DeptStats AS (
+    SELECT 
+        d.DepartmentId,
+        d.DepartmentName,
+        ROUND(AVG(e.Salary), 2) AS AverageSalary
+    FROM Departments d
+    INNER JOIN Employees e ON d.DepartmentId = e.DepartmentId
+    GROUP BY d.DepartmentId, d.DepartmentName
+)
+SELECT TOP 3 DepartmentId, DepartmentName, AverageSalary
+FROM DeptStats
+ORDER BY AverageSalary DESC;
+GO
+
+-- Сравнение читаемости:
+-- CTE (WITH) выносит вычисление агрегата в отдельный именованный блок сверху,
+-- благодаря чему основной запрос SELECT читается линейно сверху вниз и не загромождается
+-- вложенными подзапросами внутри WHERE или FROM.
+```
+
+### Результат
+
+```text
+Запрос 1 (выше средней): 3 сотрудника — Анна Иванова (76500.00), Пётр Сидоров (84200.00), Алексей Лебедев (95000.00).
+Запрос 2 (топ-3 отдела): Менеджмент (95000.00), Разработка (71550.00), Аналитика (58666.67).
+```
+
+### Вывод
+
+Освоил обобщённые табличные выражения (`WITH ... AS`) и убедился, что они делают сложные запросы гораздо читабельнее и структурированнее по сравнению с вложенными подзапросами.
+
+---
+
+## Task 26 — CASE: условная логика в SELECT
+
+### Запрос
+
+```sql
+SELECT 
+    EmployeeName,
+    Salary,
+    CASE 
+        WHEN Salary > 60000 THEN 'High'
+        WHEN Salary BETWEEN 40000 AND 60000 THEN 'Medium'
+        ELSE 'Low'
+    END AS SalaryLevel,
+    HireDate,
+    CASE 
+        WHEN YEAR(HireDate) < 2020 THEN 'Senior'
+        WHEN YEAR(HireDate) BETWEEN 2020 AND 2022 THEN 'Mid'
+        ELSE 'Junior'
+    END AS Tenure
+FROM Employees;
+GO
+```
+
+### Результат
+
+```text
+Анна Иванова: High, Mid | Пётр Сидоров: High, Senior | Мария Кузнецова: High, Mid | Иван Петров: Medium, Junior | Ольга Смирнова: High, Mid | Дмитрий Орлов: Medium, Mid | Елена Волкова: Medium, Junior | Наталья Соколова: Medium, Junior | Алексей Лебедев: High, Senior.
+```
+
+### Вывод
+
+Отработал создание вычисляемых категориальных столбцов прямо в `SELECT` с помощью конструкции `CASE WHEN ... THEN ... ELSE ... END`.
+
+---
+
+## Task 27 — Работа с датами: DATEADD, DATEDIFF, FORMAT
+
+### Запрос
+
+```sql
+SELECT 
+    EmployeeName,
+    FORMAT(HireDate, 'dd.MM.yyyy') AS FormattedHireDate,
+    DATEDIFF(YEAR, HireDate, GETDATE()) AS YearsOfService,
+    DATEDIFF(MONTH, HireDate, GETDATE()) AS MonthsOfService,
+    FORMAT(DATEADD(YEAR, 1, HireDate), 'dd.MM.yyyy') AS OneYearAnniversary
+FROM Employees;
+GO
+```
+
+### Результат
+
+```text
+Анна Иванова: 15.03.2020 | 6 лет | 80 мес. | 15.03.2021
+Пётр Сидоров: 01.07.2019 | 7 лет | 88 мес. | 01.07.2020
+Алексей Лебедев: 25.05.2018 | 8 лет | 102 мес. | 25.05.2019
+Наталья Соколова: 01.02.2024 | 2 года | 33 мес. | 01.02.2025
+```
+
+### Вывод
+
+Научился вычислять разницу между датами в годах и месяцах (`DATEDIFF`), прибавлять интервалы к дате (`DATEADD`) и форматировать вывод даты по шаблону `'dd.MM.yyyy'` через `FORMAT`.
+
