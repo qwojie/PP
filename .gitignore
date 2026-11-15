@@ -2,3 +2,9 @@
 obj/
 .vs/
 *.user
+
+*.mdf
+*.ldf
+*.bak
+.env
+appsettings.Development.json
